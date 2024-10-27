@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\Book;
+use App\Models\Buku; // Pastikan model sesuai dengan yang Anda gunakan
 use Illuminate\Database\Seeder;
+use Faker\Factory as Faker;
 
 class BukuSeeder extends Seeder
 {
@@ -12,14 +13,15 @@ class BukuSeeder extends Seeder
      */
     public function run(): void
     {
+        $faker = Faker::create();
+
         for ($i = 0; $i < 10; $i++) {
-            Book::create([
-                'judul' => fake()->sentence(nbWords: 3),
-                'penulis' => fake()->name(),
-                'harga' => fake()->numberBetween(int1: 10000, int2: 50000),
-                'tgl_terbit' => fake()->date(),
+            Buku::create([
+                'judul' => $faker->sentence(3), // Menghasilkan judul dengan 3 kata
+                'penulis' => $faker->name(),
+                'harga' => $faker->numberBetween(10000, 50000),
+                'tgl_terbit' => $faker->date(),
             ]);
         }
-        
     }
 }

@@ -10,7 +10,30 @@
 <body>
     <div class="container mt-5">
         <h2 class="mb-4">Daftar Buku</h2>
-        <a href="{{ route('buku.create') }}" class="btn btn-primary mb-3">Tambah Buku</a>
+
+        <!-- Pesan Flash -->
+        @if(session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <!-- Tombol Tambah Buku untuk Admin Saja -->
+        @if(auth()->check() && auth()->user()->role == 'admin')
+            <a href="{{ route('buku.create') }}" class="btn btn-primary mb-3">Tambah Buku</a>
+        @endif
+
+        <!-- Form Pencarian -->
+        <form method="GET" action="{{ route('buku.index') }}" class="form-inline mb-3">
+            <input type="text" name="search" class="form-control mr-2" placeholder="Cari buku..." value="{{ request('search') }}">
+            <button type="submit" class="btn btn-outline-primary">Cari</button>
+        </form>
         
         <table class="table table-striped table-bordered">
             <thead class="thead-dark">
@@ -32,20 +55,27 @@
                         <td>{{ "Rp. ".number_format($buku->harga, 2, ',', '.') }}</td>
                         <td>{{ \Carbon\Carbon::parse($buku->tgl_terbit)->format('d-m-Y') }}</td>
                         <td>
-                            <div class="btn-group" role="group">
-                                <!-- Link untuk edit -->
-                                <a href="{{ route('buku.edit', $buku->id) }}" class="btn btn-warning">Edit</a>
-                                <form action="{{ route('buku.destroy', $buku->id) }}" method="POST" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button onclick="return confirm('Yakin mau dihapus?')" type="submit" class="btn btn-danger">Hapus</button>
-                                </form>
-                            </div>
+                            @if(auth()->check() && auth()->user()->role == 'admin')
+                                <div class="btn-group" role="group">
+                                    <!-- Link untuk edit -->
+                                    <a href="{{ route('buku.edit', $buku->id) }}" class="btn btn-warning">Edit</a>
+                                    <form action="{{ route('buku.destroy', $buku->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button onclick="return confirm('Yakin mau dihapus?')" type="submit" class="btn btn-danger">Hapus</button>
+                                    </form>
+                                </div>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+
+        <!-- Pagination Links -->
+        <div class="d-flex justify-content-center">
+            {{ $data_buku->appends(request()->except('page'))->links() }}
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
