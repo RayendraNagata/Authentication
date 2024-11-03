@@ -71,4 +71,20 @@ class BukuController extends Controller
 
         return redirect()->route('buku.index')->with('success', 'Data Buku berhasil diupdate!');
     }
+
+        public function register(Request $request)
+    {
+        // Validasi dan buat pengguna baru
+        $user = User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password')),
+        ]);
+
+        // Kirim email ke pengguna
+        Mail::to($user->email)->send(new UserRegistered($user->toArray()));
+
+        // Redirect ke halaman tertentu dengan pesan sukses
+        return redirect()->route('home')->with('success', 'Pendaftaran berhasil! Email telah dikirim ke alamat Anda.');
+    }
 }
